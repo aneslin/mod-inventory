@@ -5,7 +5,11 @@ import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
 import org.folio.DataImportEventPayload;
-import org.folio.inventory.dataimport.handlers.matching.InstanceLoader;
+import org.folio.inventory.dataimport.handlers.matching.MatchHoldingEventHandler;
+import org.folio.inventory.dataimport.handlers.matching.MatchItemEventHandler;
+import org.folio.inventory.dataimport.handlers.matching.loaders.HoldingLoader;
+import org.folio.inventory.dataimport.handlers.matching.loaders.InstanceLoader;
+import org.folio.inventory.dataimport.handlers.matching.loaders.ItemLoader;
 import org.folio.inventory.dataimport.handlers.matching.MatchInstanceEventHandler;
 import org.folio.inventory.storage.Storage;
 import org.folio.inventory.support.http.server.ServerErrorResponse;
@@ -21,7 +25,13 @@ public class EventHandlers {
 
   public EventHandlers(final Storage storage) {
     MatchValueLoaderFactory.register(new InstanceLoader(storage));
+    MatchValueLoaderFactory.register(new ItemLoader(storage));
+    MatchValueLoaderFactory.register(new HoldingLoader(storage));
+
     EventManager.registerEventHandler(new MatchInstanceEventHandler());
+    EventManager.registerEventHandler(new MatchItemEventHandler());
+    EventManager.registerEventHandler(new MatchHoldingEventHandler());
+
     MatchValueReaderFactory.register(new MarcValueReaderImpl());
   }
 
